@@ -12,15 +12,16 @@ outlet usable, and routes the micro-USB cables down to a single exit.
   the existing two **6-32** strap screws, **3.812" (96.85 mm)** center-to-center.
   The Decora opening is left clear so the receptacle stays usable.
 - **Chargers:** two round **Fi Series 3 charging bases** (the black pucks). The
-  collar's module drops into the recess on the base's top face and charges by
-  contact (LED pulses blue). The holder grips the *base*; the base does the
+  base is **magnetic** — the collar's module snaps onto the top face and is held
+  by magnet while it charges. The holder grips the *base*; the base does the
   charging and collar retention. Powered by a micro-USB cable out of each base.
 
 ## How it works
 
 Each base sits in a cup cradle that **leans back** (`cradle_tilt`, default 45°)
-so the charging face aims **up-and-out** — the collar module seats by gravity
-and stays put while charging. The collar band drapes down the front of the
+so the charging face aims **up-and-out**. Because the base is magnetic, the
+collar module snaps on and stays put regardless of tilt — the lean is mostly for
+presentation and band clearance. The collar band drapes down the front of the
 plate. The base's micro-USB cable exits a **notch** in the cup's lower lip and
 drops into a **front-face channel** with a snap-over clip, routing to the bottom
 edge and on to the power strip below.
@@ -28,33 +29,36 @@ edge and on to the power strip below.
 The wall side is clipped dead flat (the tilted cups blend into the plate via a
 skirt that is sheared off at the wall plane), so it mounts flush.
 
-## ⚠️ Measure before you print
+## Dimensions are ESTIMATED (Fi doesn't publish them)
 
-Every fit-critical number is a parameter at the top of
-[src/fi-collar-charger-plate.scad](src/fi-collar-charger-plate.scad). The defaults
-are **placeholders** — measure your actual Fi base and drop the real numbers in:
+Fi publishes no specs for the bare base puck — only the retail box
+(170 × 110 × 63 mm). The values below are an **estimate** from product photos +
+the box size, set at the top of
+[src/fi-collar-charger-plate.scad](src/fi-collar-charger-plate.scad). The fit is
+forgiving (magnetic retention + generous clearance), but a 20-second ruler check
+of the real puck lets you tighten it to a true snug fit:
 
-| Parameter    | Meaning                                   | Default (placeholder) |
+| Parameter    | Meaning                                   | Value (estimate)      |
 |--------------|-------------------------------------------|-----------------------|
-| `base_dia`   | outer diameter of the round Fi base       | **64 mm — MEASURE**   |
-| `base_thick` | puck thickness / height                   | **14 mm — MEASURE**   |
-| `cable_exit` | `"side"` or `"bottom"` micro-USB exit     | `"side"` — confirm    |
-| `base_clear` | radial fit clearance (snug)               | 0.6 mm                |
+| `base_dia`   | outer diameter of the round Fi base       | **67 mm — estimate**  |
+| `base_thick` | puck thickness / height                   | **13 mm — estimate**  |
+| `cable_exit` | `"side"` or `"bottom"` micro-USB exit     | `"side"`              |
+| `base_clear` | radial fit clearance                      | 1.0 mm (generous)     |
 | `cradle_tilt`| base face angle from vertical             | 45°                   |
 
 Re-export after editing: `just build` (or override headless, e.g.
-`openscad -D 'base_dia=58' -D 'base_thick=12' -o out.stl src/...scad`).
+`openscad -D 'base_dia=63' -D 'base_clear=0.5' -o out.stl src/...scad`).
 
 ## Size note (the honest trade-off)
 
 A face-up puck held near a wall **inherently sticks out** — there is no way to
 charge a collar face-up against a wall without a shelf-like protrusion. At the
-64 mm placeholder size the plate comes out **~202 × 123 × 4 mm (8.0 × 4.8")** and
+67 mm estimated size the plate comes out **~210 × 123 × 4 mm (8.3 × 4.8")** and
 the cups stand **~35–45 mm proud** of the wall. Levers to shrink it:
 
-- **Smaller real `base_dia`** — likely; 64 mm is a guess from the photo.
-- **Lower `cradle_tilt`** — flatter to the wall, less protrusion, but the collar
-  leans more on the base's own recess to stay seated.
+- **Smaller real `base_dia`** — quite possible; 67 mm is an estimate.
+- **Lower `cradle_tilt`** — flatter to the wall, less protrusion (magnetic
+  retention means the collar stays on even at a low tilt).
 - **Switch layout to stacked** (cups above the opening, not flanking) — a much
   narrower plate (~75 mm wide). This is a code change, not a parameter.
 
@@ -82,6 +86,6 @@ BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 
 ## Status
 
-**v1 — first complete parametric design, rendered + manifold (`Simple: yes`).**
-Not yet printed; dimensions are placeholders pending measurement. See the table
-above.
+**v1.1 — dimensions set to best estimate (Fi base specs are unpublished), magnetic
+retention confirmed, rendered + manifold (`Simple: yes`).** Not yet printed; a
+ruler check of the real puck would let you tighten the fit. See the table above.

@@ -18,17 +18,23 @@
 
 include <BOSL2/std.scad>
 
-/* [Fi base puck — MEASURE THESE THREE] */
-// Outer diameter of the round Fi base puck (mm).            <-- MEASURE
-base_dia      = 64;      // placeholder ~2.5in; replace with caliper reading
-// Puck thickness / height (mm).                             <-- MEASURE
-base_thick    = 14;      // placeholder; replace with caliper reading
-// Where the micro-USB cable leaves the base: "side" or "bottom".  <-- MEASURE
+/* [Fi base puck — ESTIMATED (not published anywhere); confirm with a ruler) */
+// Outer diameter of the round Fi Series 3 base puck (mm).
+// ESTIMATE: reads just under a hockey puck (76mm) in the photo; retail box
+// interior (110mm) easily contains it. Replace with a caliper reading to nail
+// the snug fit. The S3 base is MAGNETIC (collar snaps to its top), so a couple
+// mm of slop here is harmless.
+base_dia      = 67;
+// Puck thickness / height (mm). ESTIMATE for a thin magnetic charging disc.
+base_thick    = 13;
+// Where the micro-USB cable leaves the base: "side" or "bottom".
 cable_exit    = "side";
 
 /* [Fit] */
-// Radial clearance around the puck (mm). Bigger = looser. 0.4-0.8 typical FDM.
-base_clear    = 0.6;
+// Radial clearance around the puck (mm). Slightly generous (1.0) because the
+// diameter is estimated and the base is magnetically retained — tighten to
+// 0.4-0.6 once you have a real measurement for a true snug fit.
+base_clear    = 1.0;
 
 /* [Cradle] */
 // Base FACE angle from VERTICAL: 0 = faces straight out from wall (collar
