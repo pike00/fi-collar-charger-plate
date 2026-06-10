@@ -1,0 +1,6 @@
+.DS_Store
+images/_render.log
+gcode/
+*.gcode
+*.bgcode
+*.scad.bak

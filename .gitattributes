@@ -1,0 +1,9 @@
+# Generated meshes are binary and must never be auto-merged.
+*.stl   -merge -diff binary
+*.3mf   -merge -diff binary
+*.step  -merge -diff binary
+
+# git-lfs upgrade path (not enabled yet — no git-lfs on this host):
+#   git lfs install && git lfs track "*.stl" "*.3mf" "*.step"
+#   git lfs migrate import --include="*.stl,*.3mf,*.step"
+*.scad text
