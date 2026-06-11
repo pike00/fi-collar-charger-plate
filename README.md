@@ -27,10 +27,15 @@ collar module snaps on and stays put regardless of tilt — the lean is mostly f
 presentation and band clearance. The collar band drapes down the front of the
 plate.
 
-**Retaining lip:** each cup has a small inward **lip** (`lip_in`, default 2 mm)
+**Retaining lip:** each cup has a thin inward **lip** (`lip_in`, default 1.3 mm)
 wrapping the lower/outer rim, with a gap at the very bottom for the cable. Drop
 the puck in from the open top-inner side and the lip catches its edge so it
 can't slide out.
+
+**Seamless / molded look:** the cup rim is chamfered (`rim_chamfer`), the bins
+are rounded, and a flared fillet (`flare_r`, `seamless_base`) blends every
+feature into the plate so it looks molded rather than glued on. Set
+`seamless_base=false` for the faster, blockier version.
 
 **Cables / where they go:** each base's micro-USB cable exits a **notch at the
 bottom of the cup** and drops straight down into a **hollow cable cup** that
@@ -98,10 +103,15 @@ BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 
 ## Status
 
+**v1.5 — thinner lip + seamless/molded look: chamfered cup rim, rounded bins, and
+a flared fillet (`base_flare`) that blends every feature into the plate so it
+reads as one molded piece instead of stuck-on boxes. Rendered + manifold
+(`Simple: yes`); ~16 s render with the flare.**
+
 **v1.4 — fixed the cradle: it was a SOLID wedge (the `skirt` that roots the
 tilted cup to the plate was filling it solid, leaving only a shallow dimple).
 Now hollowed into a proper shell — real walls, a floor the puck rests on, open
-underneath. Rendered + manifold (`Simple: yes`).** Not yet printed; a ruler check
-of the real puck would let you tighten the fit. See the table above.
+underneath.** Not yet printed; a ruler check of the real puck would let you
+tighten the fit. See the table above.
 
 > `-D section=true` renders a YZ cross-section through the left cup for inspection.

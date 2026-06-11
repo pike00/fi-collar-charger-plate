@@ -67,9 +67,14 @@ edge_margin   = 9;       // mm  plate material around the cradles/screws
 gap           = 4;       // mm  clearance between Decora opening and a cradle
 
 /* [Charger retaining lip — captures the puck so it can't slide out] */
-lip_in        = 2.0;     // mm  how far the lip overhangs inward over the puck rim
-lip_h         = 2.6;     // mm  lip thickness (depth down from the cup rim)
+lip_in        = 1.3;     // mm  how far the lip overhangs inward over the puck rim (thin)
+lip_h         = 1.4;     // mm  lip thickness (depth down from the cup rim)
 lip_gap_w     = 18;      // mm  gap left in the lip at the bottom for the cable
+
+/* [Seamless rounding — blend everything into one molded-looking piece] */
+rim_chamfer   = 2.0;     // mm  chamfer softening the cup's top outer rim
+seamless_base = true;    // add a flared fillet where cups + bins meet the plate
+flare_r       = 3.5;     // mm  radius of that base fillet
 
 /* [Cable management — a hollow cup below each charger swallows the cable] */
 cc_w          = 52;      // mm  cable cup width (x)
@@ -134,7 +139,7 @@ module one_cradle() {
     union() {
         difference() {
             union() {
-                cylinder(h = cup_h, d = cup_od);                 // the cup
+                cyl(h = cup_h, d = cup_od, chamfer2 = rim_chamfer, anchor = BOTTOM); // cup, softened rim
                 translate([0, 0, -skirt]) cylinder(h = skirt + eps, d = cup_od); // stem
             }
             // puck recess (open top) — the puck rests on the floor at z=floor_th
@@ -194,7 +199,7 @@ module groove(pts) {
 // top to receive the cable from the cup above, solid front wall to hide it.
 module cable_cup_shell(sx) {
     translate([sx*off_x, cc_cy, plate_th + cc_z/2])
-        cuboid([cc_w, cc_h, cc_z], rounding = 4, edges = "Z");
+        cuboid([cc_w, cc_h, cc_z], rounding = 4, edges = "ALL", except = BOTTOM);
 }
 
 module cable_cup_cut(sx) {
@@ -215,6 +220,27 @@ module tail_groove(sx) {
     groove([start, endp]);
 }
 
+// Approximate footprint of the protruding features on the plate (cheap explicit
+// shapes, not a costly projection): a Y-stretched ellipse for each tilted cup
+// plus a rounded rect for each bin. The two overlap, so per side it is one blob.
+module footprint_2d() {
+    for (s = [-1, 1]) {
+        translate([s*off_x, -6]) scale([1, 1.35]) circle(d = cup_od);   // tilted cup shadow
+        translate([s*off_x, cc_cy]) square([cc_w, cc_h], center = true); // bin
+    }
+}
+
+// A flared fillet that grows out of the plate around that footprint, tapering up
+// to meet the features — so the cups and bins look molded into the plate instead
+// of glued on. Minkowski of the (cheap) footprint with a cone.
+module base_flare() {
+    translate([0, 0, plate_th - eps])
+        minkowski() {
+            linear_extrude(height = eps) footprint_2d();
+            cylinder(h = flare_r, r1 = flare_r, r2 = 0.01, $fn = 20);
+        }
+}
+
 // Remove everything behind the wall plane (z < 0) so the mounting face is dead
 // flat — the tilted cup skirts get sheared off here, blending into the plate.
 module back_clip() {
@@ -225,6 +251,7 @@ module fi_charger_plate() {
     difference() {
         union() {
             plate_blank();
+            if (seamless_base) base_flare();
             for (s = [-1, 1]) cradle_at(s);
             for (s = [-1, 1]) cable_cup_shell(s);
         }
