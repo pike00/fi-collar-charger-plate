@@ -2,7 +2,7 @@
 
 A 3D-printed **Decora outlet faceplate** that holds **two Fi Series 3 dog-collar
 charging bases** in flanking cradles, charges the collars in place, keeps the
-outlet usable, and routes the micro-USB cables down to a single exit.
+outlet usable, and swallows the cables inside the cradle bodies.
 
 ![hero](images/plate-hero.png)
 
@@ -21,31 +21,33 @@ outlet usable, and routes the micro-USB cables down to a single exit.
 
 ## How it works
 
-Each base sits in a cup cradle that **leans back** (`cradle_tilt`, default 45°)
-so the charging face aims **up-and-out**. Because the base is magnetic, the
-collar module snaps on and stays put regardless of tilt — the lean is mostly for
-presentation and band clearance. The collar band drapes down the front of the
-plate.
+Each cradle is **one seamless hulled form**: a tilted cup blended smoothly into
+a rounded foot pad on the plate — no flares or stuck-on boxes; the hull surface
+itself is the blend. The cup leans back (`cradle_tilt`, default 30°) so the
+charging face aims up-and-out; the magnetic base plus a thin lip keep everything
+seated. The collar band drapes down the front.
 
-**Retaining lip:** each cup has a thin inward **lip** (`lip_in`, default 1.3 mm)
-wrapping the lower/outer rim, with a gap at the very bottom for the cable. Drop
-the puck in from the open top-inner side and the lip catches its edge so it
-can't slide out.
+**Geometry constraint (why 30° and why the cup floats):** a wide puck tilted
+near a wall would physically extend *behind* the wall plane — at 45° a 67 mm
+puck needs its rear edge ~22 mm inside the wall. The model auto-derives
+`cup_lift` from the tilt so the entire recess clears the wall plane (+1 mm).
+Versions before v1.6 missed this; their recesses were sheared off at the wall
+and a real puck could never have seated. Raising `cradle_tilt` is allowed but
+automatically grows the prow (45° → ~62 mm stick-out; 30° → ~48 mm).
 
-**Seamless / molded look:** the cup rim is chamfered (`rim_chamfer`), the bins
-are rounded, and a flared fillet (`flare_r`, `seamless_base`) blends every
-feature into the plate so it looks molded rather than glued on. Set
-`seamless_base=false` for the faster, blockier version.
+**Retaining lip:** a thin inward **lip** (`lip_in`, default 1.3 mm) on the lower
+half of the recess rim, with a gap at the bottom aligned with the cable slot.
+Drop the puck in from the top; the lip catches its rim so it can't slide out.
 
-**Cables / where they go:** each base's micro-USB cable exits a **notch at the
-bottom of the cup** and drops straight down into a **hollow cable cup** that
-protrudes below each charger (open top to receive the cable, solid front wall to
-hide it). Coil excess cable into the bin; a short **groove** then carries the
-tail out of the bin's inner side to the **USB brick** plugged into the outlet.
-Use a short cable (6–12") so the bin isn't overstuffed.
+**Cables / where they go:** the puck's micro-USB plug rides down a **slot in the
+cup's lower wall** (`notch_w`) as the puck seats. The slot continues inside the
+cradle body into a **hidden cable cavity** (`cav_*`) — coil the excess in there.
+The tail exits a small **mouth on the cradle's inner side** and runs along a
+shallow **groove** in the plate face to the USB brick in the outlet. Use a short
+cable (6–12") so the cavity isn't overstuffed.
 
-The wall side is clipped dead flat (the tilted cups blend into the plate via a
-skirt that is sheared off at the wall plane), so it mounts flush.
+The mounting face is dead flat (everything is clipped at the wall plane), so it
+sits flush on the outlet.
 
 ## Dimensions are ESTIMATED (Fi doesn't publish them)
 
@@ -61,7 +63,7 @@ of the real puck lets you tighten it to a true snug fit:
 | `base_dia`   | outer diameter of the round Fi base       | **67 mm — estimate**  |
 | `base_thick` | puck thickness / height                   | **13 mm — estimate**  |
 | `base_clear` | radial fit clearance                      | 1.0 mm (generous)     |
-| `cradle_tilt`| base face angle from vertical             | 45°                   |
+| `cradle_tilt`| base face angle from vertical             | 30° (lift auto-derived) |
 
 Re-export after editing: `just build` (or override headless, e.g.
 `openscad -D 'base_dia=63' -D 'base_clear=0.5' -o out.stl src/...scad`).
@@ -69,23 +71,29 @@ Re-export after editing: `just build` (or override headless, e.g.
 ## Size note (the honest trade-off)
 
 A face-up puck held near a wall **inherently sticks out** — there is no way to
-charge a collar face-up against a wall without a shelf-like protrusion. At the
-67 mm estimated size the plate comes out **~210 × 123 × 4 mm (8.3 × 4.8")** and
-the cups stand **~35–45 mm proud** of the wall. Levers to shrink it:
+charge a collar face-up against a wall without a shelf-like protrusion, and the
+wall-clearance constraint above makes the minimum protrusion a function of tilt.
+At the 67 mm estimated size the plate comes out **~210 × 123 × 4 mm (8.3 × 4.8")**
+and the cradles stand **~48 mm proud** at the rim front (30° tilt). Levers:
 
-- **Smaller real `base_dia`** — quite possible; 67 mm is an estimate.
-- **Lower `cradle_tilt`** — flatter to the wall, less protrusion (magnetic
+- **Smaller real `base_dia`** — quite possible; 67 mm is an estimate. Shrinks
+  both the plate and the required lift.
+- **Lower `cradle_tilt`** — flatter to the wall, smaller prow (magnetic
   retention means the collar stays on even at a low tilt).
 - **Switch layout to stacked** (cups above the opening, not flanking) — a much
-  narrower plate (~75 mm wide). This is a code change, not a parameter.
+  narrower plate (~93 mm wide: cup + edge margins). This is a code change, not
+  a parameter.
 
 ## Print settings (suggested — update after first print)
 
 - Material: PETG or PLA+ (near an outlet; PETG tolerates warmth better).
-- Layer height: 0.2 mm. Walls: 3+ perimeters. Infill: 20–30%.
+- Layer height: 0.2 mm. Walls: 3+ perimeters. Infill: 15–25%. Solid model
+  volume is ~280 cm³ (measured via trimesh) — the hulled cradles are chunky, so
+  filament use is driven by infill; trust the slicer's estimate.
 - **Orientation:** plate back (wall side) flat on the bed; cups face up. The
-  skirt ramp behind each cup prints as a self-supporting overhang at 45°; at
-  higher `cradle_tilt` the cup's upper lip may want a little support.
+  hull prow is a smooth ~45–60° overhang — self-supporting. The hidden cable
+  cavity ceiling bridges ~30 mm; droop in there is invisible. The cup rim's
+  upper arc may want a touch of support at high `cradle_tilt`.
 - Screws: reuse the outlet's existing 6-32 screws; `screw_clear`/`screw_head`
   are sized for a flat-head countersink on the front face.
 
@@ -101,17 +109,24 @@ just clean      # remove generated STL
 BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 (wired into the justfile).
 
+Inspection renders: `-D section=1` slices a cup (YZ); `-D section=2` slices the
+cable cavity (XZ).
+
 ## Status
 
-**v1.5 — thinner lip + seamless/molded look: chamfered cup rim, rounded bins, and
-a flared fillet (`base_flare`) that blends every feature into the plate so it
-reads as one molded piece instead of stuck-on boxes. Rendered + manifold
-(`Simple: yes`); ~16 s render with the flare.**
+**v1.6 — geometry rebuilt: each cradle is one hulled seamless form (cup + foot
+pad), the cable cup is now an internal hidden cavity with an inner exit mouth,
+and the wall-intersection flaw was found and fixed (`cup_lift` auto-derived so
+the recess actually clears the wall; tilt default now 30°). Verified by a
+3-agent adversarial audit (numeric transform recomputation + trimesh probes of
+the STL + render inspection): recess clears the wall by 0.87 mm, chute→cavity
+aperture 175 mm², mouth exits to open air, mesh watertight. The audit caught and
+this version fixes: a lip strap bridging the cable slot (center=true cutter
+bug), 0.16 mm cavity-corner membranes (pad roundover now buried in the plate),
+a mouth-exit ledge, floating groove starts, and a 1 mm groove web (now 2 mm).**
+Not yet printed; a ruler check of the real puck would let you tighten the fit.
+See the table above.
 
-**v1.4 — fixed the cradle: it was a SOLID wedge (the `skirt` that roots the
-tilted cup to the plate was filling it solid, leaving only a shallow dimple).
-Now hollowed into a proper shell — real walls, a floor the puck rests on, open
-underneath.** Not yet printed; a ruler check of the real puck would let you
-tighten the fit. See the table above.
-
-> `-D section=true` renders a YZ cross-section through the left cup for inspection.
+Earlier: v1.5 flare experiment (superseded — the flare never matched the tilted
+footprint and looked lumpy), v1.4 hollow-shell fix, v1.3 bins + lip, v1.2 inward
+routing, v1.1 estimated dims, v1 first cut.

@@ -19,17 +19,21 @@ build:
 
 build-all: build
 
-# Re-render the committed preview PNGs (STL export needs no GL; PNGs do).
-view := "--imgsize=1600,1200 --colorscheme=Tomorrow --projection=perspective --viewall --render"
+# Re-render ALL committed PNGs: 5 views + 2 inspection cross-sections.
+persp := "--imgsize=1500,1100 --colorscheme=Tomorrow --projection=perspective --viewall --autocenter --render"
+ortho := "--imgsize=1500,1000 --colorscheme=Tomorrow --projection=ortho --viewall --autocenter --render"
 preview:
-    OPENSCADPATH={{oscadpath}} {{render}} {{view}} \
-        --camera=0,0,0,55,0,20,1 -o images/plate-hero.png {{src}}
-    OPENSCADPATH={{oscadpath}} {{render}} {{view}} \
-        --camera=0,0,0,0,0,0,1 -o images/plate-front.png {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' {{persp}} --camera=150,-300,300,0,6,10    -o images/plate-hero.png    {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' {{persp}} --camera=0,-25,430,0,-6,14      -o images/plate-front.png   {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' {{persp}} --camera=430,-30,90,0,-6,20     -o images/plate-side.png    {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' {{persp}} --camera=20,150,210,0,0,8       -o images/plate-topdown.png {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' --imgsize=1500,1100 --colorscheme=Tomorrow --projection=perspective --render --camera=-58,-150,150,-58,-2,10 -o images/zoom-cup.png {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' -D 'section=1' {{ortho}} --camera=400,0,40,-58,0,30   -o images/section-cup.png    {{src}}
+    OPENSCADPATH={{oscadpath}} {{render}} -D '$fn={{fn}}' -D 'section=2' {{ortho}} --camera=0,-400,40,0,-32,20  -o images/section-cavity.png {{src}}
 
-# Print the derived dimensions (plate size, cup bore) without exporting.
+# Print the derived dimensions (plate size, cup bore, lift) without exporting.
 dims:
-    OPENSCADPATH={{oscadpath}} {{openscad}} -o /dev/null {{src}} 2>&1 | grep ECHO
+    OPENSCADPATH={{oscadpath}} {{openscad}} -o /tmp/fi-dims.csg {{src}} 2>&1 | grep ECHO; rm -f /tmp/fi-dims.csg
 
 # Remove generated meshes (PNGs are committed).
 clean:
