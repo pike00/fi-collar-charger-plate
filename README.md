@@ -15,6 +15,9 @@ outlet usable, and routes the micro-USB cables down to a single exit.
   base is **magnetic** — the collar's module snaps onto the top face and is held
   by magnet while it charges. The holder grips the *base*; the base does the
   charging and collar retention. Powered by a micro-USB cable out of each base.
+- **Power:** a small **USB wall brick plugs into this same outlet** (the opening
+  is left clear for it — on a duplex receptacle one socket can stay free). Both
+  base cables run inward to that brick, so there's no cable run down the wall.
 
 ## How it works
 
@@ -22,9 +25,15 @@ Each base sits in a cup cradle that **leans back** (`cradle_tilt`, default 45°)
 so the charging face aims **up-and-out**. Because the base is magnetic, the
 collar module snaps on and stays put regardless of tilt — the lean is mostly for
 presentation and band clearance. The collar band drapes down the front of the
-plate. The base's micro-USB cable exits a **notch** in the cup's lower lip and
-drops into a **front-face channel** with a snap-over clip, routing to the bottom
-edge and on to the power strip below.
+plate.
+
+**Cables / where they go:** each base's micro-USB cable exits a **notch on the
+cup's inner side** and drops into a **groove** in the front face that runs down
+alongside the Decora opening to the bottom-center. There, two **wind-posts**
+flank the lower mounting screw (the screw stays accessible between them) — coil
+any excess cable around the posts, then the short tails reach up into the opening
+to the **USB brick** plugged into the outlet. Use a short cable (6–12") so there
+is little slack to manage.
 
 The wall side is clipped dead flat (the tilted cups blend into the plate via a
 skirt that is sheared off at the wall plane), so it mounts flush.
@@ -42,7 +51,6 @@ of the real puck lets you tighten it to a true snug fit:
 |--------------|-------------------------------------------|-----------------------|
 | `base_dia`   | outer diameter of the round Fi base       | **67 mm — estimate**  |
 | `base_thick` | puck thickness / height                   | **13 mm — estimate**  |
-| `cable_exit` | `"side"` or `"bottom"` micro-USB exit     | `"side"`              |
 | `base_clear` | radial fit clearance                      | 1.0 mm (generous)     |
 | `cradle_tilt`| base face angle from vertical             | 45°                   |
 
@@ -86,6 +94,7 @@ BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 
 ## Status
 
-**v1.1 — dimensions set to best estimate (Fi base specs are unpublished), magnetic
-retention confirmed, rendered + manifold (`Simple: yes`).** Not yet printed; a
-ruler check of the real puck would let you tighten the fit. See the table above.
+**v1.2 — cable routing reworked for a USB brick in this same outlet: inner-side
+notches, grooves down to bottom-center, two wind-posts for slack. Rendered +
+manifold (`Simple: yes`).** Not yet printed; a ruler check of the real puck
+would let you tighten the fit. See the table above.

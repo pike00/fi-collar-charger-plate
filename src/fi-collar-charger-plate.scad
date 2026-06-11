@@ -27,8 +27,8 @@ include <BOSL2/std.scad>
 base_dia      = 67;
 // Puck thickness / height (mm). ESTIMATE for a thin magnetic charging disc.
 base_thick    = 13;
-// Where the micro-USB cable leaves the base: "side" or "bottom".
-cable_exit    = "side";
+// (cable routing is fixed: each base's cable exits the cup's INNER side and
+// heads toward the USB brick plugged into this outlet — see Cable management.)
 
 /* [Fit] */
 // Radial clearance around the puck (mm). Slightly generous (1.0) because the
@@ -66,10 +66,15 @@ screw_head    = 8.0;     // mm  countersink head diameter (flat-head)
 edge_margin   = 9;       // mm  plate material around the cradles/screws
 gap           = 4;       // mm  clearance between Decora opening and a cradle
 
-/* [Cable management] */
-channel_w     = 7;       // mm  width of the front-face cable channel
-channel_d     = 3.5;     // mm  depth of the channel
-cable_clip    = true;    // add a snap-over bridge on each channel
+/* [Cable management — both cables route INWARD to a USB brick in this outlet] */
+channel_w     = 7;       // mm  width of the front-face cable groove
+channel_d     = 3.0;     // mm  depth of the groove (plate is 4 mm)
+slack_spool   = true;    // two wind-posts flanking the lower screw take up slack
+post_d        = 6;       // mm  wind-post diameter
+post_h        = 6;       // mm  how far each post stands proud of the front face
+post_x        = 15;      // mm  posts sit at x = +/-post_x, flanking the screw
+recess_r      = 9;       // mm  shallow seating recess radius under each post
+recess_d      = 2;       // mm  depth of that recess
 
 /* [Quality] */
 $fn           = 48;      // bump to 96+ for the final export
@@ -121,7 +126,10 @@ module screw_holes() {
 // it, the skirt fully overlaps the plate; everything behind the wall plane is
 // later clipped flat. The puck bore + floor hole stay in positive Z so they
 // never break through to the wall side.
-module one_cradle() {
+module one_cradle(sx) {
+    // sx = -1 (left) / +1 (right). The cable notch is cut on the cup's INNER
+    // side (the side facing plate center) so the cable heads toward the brick.
+    naz = (sx < 0) ? 0 : 180;   // inner side: +X for left cup, -X for right cup
     difference() {
         union() {
             cylinder(h = cup_h, d = cup_od);                 // the cup
@@ -131,40 +139,52 @@ module one_cradle() {
         translate([0, 0, floor_th]) cylinder(h = cup_h, d = cup_id);
         // floor hole (kept above z=0 so it can't tunnel to the wall side)
         translate([0, 0, 0.6]) cylinder(h = cup_h, d = center_hole);
-        // cable notch through the DOWN-slope wall (-Y local), open to the rim
-        translate([0, -cup_od/2, floor_th + cup_depth/2])
-            cube([cable_notch_w, cradle_wall*3, cup_depth + 2*eps], center = true);
+        // cable notch through the INNER wall, open to the rim
+        rotate([0, 0, naz])
+            translate([cup_od/2, 0, floor_th + cup_depth/2])
+                cube([cradle_wall*3, cable_notch_w, cup_depth + 2*eps], center = true);
     }
 }
 
 module cradle_at(sx) {
-    // sx = -1 (left) or +1 (right). Pivot at the plate front face, lean the cup
-    // back so its opening aims up-and-out. The skirt swings behind the plate and
-    // is clipped flat by back_clip().
+    // Pivot at the plate front face, lean the cup back so its opening aims
+    // up-and-out. The skirt swings behind the plate and is clipped flat.
     translate([sx*off_x, 0, plate_th])
-        rotate([-cradle_tilt, 0, 0])      // +Z opening tips toward +Y (up & out)
-            one_cradle();
+        rotate([-cradle_tilt, 0, 0])
+            one_cradle(sx);
 }
 
+// A rounded groove cut into the front face along a polyline of [x,y] points.
+module groove(pts) {
+    for (i = [0:len(pts)-2])
+        hull() for (p = [pts[i], pts[i+1]])
+            translate([p[0], p[1], plate_th - channel_d])
+                cylinder(h = channel_d + eps, d = channel_w);
+}
+
+// From each cup's inner rim, down past the opening edge, into the wind-post
+// recess below — keeping clear of the central Decora opening.
 module cable_channel(sx) {
-    // groove on the front face from under the cup down to the bottom edge
-    x = sx*off_x;
-    y0 = -cup_od/2;                 // just below the cup
-    y1 = -plate_h/2 + eps;          // bottom edge
-    translate([x, (y0+y1)/2, plate_th - channel_d/2 + eps])
-        cube([channel_w, abs(y0 - y1), channel_d + eps], center = true);
+    cupedge = [sx*(off_x - cup_od/2 + 1), 0];
+    bypass  = [sx*(opening_w/2 + 3),      -opening_h/2 - 3];
+    postpt  = [sx*post_x,                 -screw_spacing/2 + recess_r - 2];
+    groove([cupedge, bypass, postpt]);
 }
 
-module cable_clip_at(sx) {
-    // a thin bridge spanning the channel to retain the cable
-    x = sx*off_x;
-    y = -plate_h/2 + 14;
-    translate([x, y, plate_th + channel_d*0.2])
-        difference() {
-            cube([channel_w + 6, 3, channel_d + 3.2], center = true);
-            translate([0, 0, -channel_d*0.5])
-                cube([channel_w - 1.5, 5, channel_d + 1.5], center = true);
-        }
+// Shallow seating recess under each wind-post (subtracted).
+module post_recess(sx) {
+    translate([sx*post_x, -screw_spacing/2, plate_th - recess_d])
+        cylinder(h = recess_d + eps, d = recess_r*2);
+}
+
+// The wind-post itself (added after the recess is cut): a stub with a flared
+// cap so coiled excess cable can't pop off.
+module wind_post(sx) {
+    translate([sx*post_x, -screw_spacing/2, plate_th - recess_d]) {
+        cylinder(h = recess_d + post_h, d = post_d);
+        translate([0, 0, recess_d + post_h - 1.4])
+            cylinder(h = 1.4, d1 = post_d, d2 = post_d + 3.5); // retaining flare
+    }
 }
 
 // Remove everything behind the wall plane (z < 0) so the mounting face is dead
@@ -174,16 +194,20 @@ module back_clip() {
 }
 
 module fi_charger_plate() {
-    difference() {
-        union() {
-            plate_blank();
-            for (s = [-1, 1]) cradle_at(s);
-            if (cable_clip) for (s = [-1, 1]) cable_clip_at(s);
+    union() {
+        difference() {
+            union() {
+                plate_blank();
+                for (s = [-1, 1]) cradle_at(s);
+            }
+            decora_opening();
+            screw_holes();
+            for (s = [-1, 1]) cable_channel(s);
+            if (slack_spool) for (s = [-1, 1]) post_recess(s);
+            back_clip();
         }
-        decora_opening();
-        screw_holes();
-        for (s = [-1, 1]) cable_channel(s);
-        back_clip();
+        // posts go on AFTER the recess cut so they aren't erased by it
+        if (slack_spool) for (s = [-1, 1]) wind_post(s);
     }
 }
 
