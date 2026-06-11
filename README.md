@@ -27,13 +27,17 @@ collar module snaps on and stays put regardless of tilt — the lean is mostly f
 presentation and band clearance. The collar band drapes down the front of the
 plate.
 
-**Cables / where they go:** each base's micro-USB cable exits a **notch on the
-cup's inner side** and drops into a **groove** in the front face that runs down
-alongside the Decora opening to the bottom-center. There, two **wind-posts**
-flank the lower mounting screw (the screw stays accessible between them) — coil
-any excess cable around the posts, then the short tails reach up into the opening
-to the **USB brick** plugged into the outlet. Use a short cable (6–12") so there
-is little slack to manage.
+**Retaining lip:** each cup has a small inward **lip** (`lip_in`, default 2 mm)
+wrapping the lower/outer rim, with a gap at the very bottom for the cable. Drop
+the puck in from the open top-inner side and the lip catches its edge so it
+can't slide out.
+
+**Cables / where they go:** each base's micro-USB cable exits a **notch at the
+bottom of the cup** and drops straight down into a **hollow cable cup** that
+protrudes below each charger (open top to receive the cable, solid front wall to
+hide it). Coil excess cable into the bin; a short **groove** then carries the
+tail out of the bin's inner side to the **USB brick** plugged into the outlet.
+Use a short cable (6–12") so the bin isn't overstuffed.
 
 The wall side is clipped dead flat (the tilted cups blend into the plate via a
 skirt that is sheared off at the wall plane), so it mounts flush.
@@ -94,7 +98,7 @@ BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 
 ## Status
 
-**v1.2 — cable routing reworked for a USB brick in this same outlet: inner-side
-notches, grooves down to bottom-center, two wind-posts for slack. Rendered +
-manifold (`Simple: yes`).** Not yet printed; a ruler check of the real puck
-would let you tighten the fit. See the table above.
+**v1.3 — added a hollow cable cup below each charger (open-top bin that hides the
+cable) and a retaining lip on each cup rim. Rendered + manifold (`Simple: yes`).**
+Not yet printed; a ruler check of the real puck would let you tighten the fit.
+See the table above.
