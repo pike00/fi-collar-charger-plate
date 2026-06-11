@@ -135,18 +135,21 @@ module one_cradle() {
         difference() {
             union() {
                 cylinder(h = cup_h, d = cup_od);                 // the cup
-                translate([0, 0, -skirt]) cylinder(h = skirt + eps, d = cup_od); // skirt
+                translate([0, 0, -skirt]) cylinder(h = skirt + eps, d = cup_od); // stem
             }
-            // puck bore
+            // puck recess (open top) — the puck rests on the floor at z=floor_th
             translate([0, 0, floor_th]) cylinder(h = cup_h, d = cup_id);
-            // floor hole (kept above z=0 so it can't tunnel to the wall side)
-            translate([0, 0, 0.6]) cylinder(h = cup_h, d = center_hole);
-            // cable notch through the DOWN (-Y) wall so the cable drops into the
-            // hollow cup below; the lip leaves a matching gap here.
+            // HOLLOW the stem below the floor so the cradle is a shell, not a
+            // solid wedge. Leaves a wall ring that reaches down to the plate.
+            translate([0, 0, -skirt - eps]) cylinder(h = skirt + eps, d = cup_id);
+            // hole through the floor so the cable can pass from the recess down
+            // into the hollow stem and on to the cable cup below
+            translate([0, 0, -eps]) cylinder(h = floor_th + 2*eps, d = center_hole);
+            // cable notch through the DOWN (-Y) wall; the lip leaves a gap here
             translate([0, -cup_od/2, floor_th + cup_depth/2])
                 cube([cable_notch_w, cradle_wall*3, cup_depth + 2*eps], center = true);
         }
-        cup_lip();   // added AFTER the bore cut so it survives, overhanging inward
+        cup_lip();   // added AFTER the recess cut so it survives, overhanging inward
     }
 }
 
@@ -233,4 +236,11 @@ module fi_charger_plate() {
     }
 }
 
-fi_charger_plate();
+section = false;   // set true (via -D) to render a YZ slice through the left cup
+if (section)
+    intersection() {
+        fi_charger_plate();
+        translate([-off_x, 0, 60]) cube([1.5, 400, 400], center = true);
+    }
+else
+    fi_charger_plate();

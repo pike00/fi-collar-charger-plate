@@ -98,7 +98,10 @@ BOSL2 is pulled from `~/.local/share/OpenSCAD/libraries` via `OPENSCADPATH`
 
 ## Status
 
-**v1.3 — added a hollow cable cup below each charger (open-top bin that hides the
-cable) and a retaining lip on each cup rim. Rendered + manifold (`Simple: yes`).**
-Not yet printed; a ruler check of the real puck would let you tighten the fit.
-See the table above.
+**v1.4 — fixed the cradle: it was a SOLID wedge (the `skirt` that roots the
+tilted cup to the plate was filling it solid, leaving only a shallow dimple).
+Now hollowed into a proper shell — real walls, a floor the puck rests on, open
+underneath. Rendered + manifold (`Simple: yes`).** Not yet printed; a ruler check
+of the real puck would let you tighten the fit. See the table above.
+
+> `-D section=true` renders a YZ cross-section through the left cup for inspection.
