@@ -6,37 +6,32 @@
 // small USB brick can plug into the outlet. Two cradles flank the opening; each
 // is ONE seamless hulled form: a tilted cup (charging face up-and-out) blending
 // smoothly into a rounded base pad on the plate. The Fi base puck drops into the
-// cup and a thin lip captures its rim. The puck's cable rides down a slot in the
-// cup's lower wall into a HOLLOW CAVITY inside the cradle body (the cable cup),
-// then exits a small mouth on the inner side and runs along a shallow groove to
-// the USB brick in the outlet.
+// cup and a thin lip captures its rim. The puck's cable rides down a slot in
+// the cup's lower wall into a HOLLOW CAVITY inside the cradle body, then exits
+// through a slot in the plate BACK FACE into the wall box — no groove across
+// the plate front, no sharp inner-mouth bend (~30° curve max from cup axis).
 //
 // The holder grips the BASE; the base (magnetic) does the charging + collar
 // retention. Only fit-critical inputs are the puck's own dimensions.
 //
 // Build:   just build        (STL)     |  Preview: just preview  (PNG)
-// Override any param headless:  openscad -D 'base_dia=63' -o out.stl <src>
+// Override any param headless:  openscad -D 'base_dia=44' -o out.stl <src>
 // Inspect: -D section=1 (YZ slice through a cup), -D section=2 (XZ slice
 //          through the cable cavity).
 // =============================================================================
 
 include <BOSL2/std.scad>
 
-/* [Fi base puck — ESTIMATED (not published anywhere); confirm with a ruler] */
-// Outer diameter of the round Fi Series 3 base puck (mm).
-// ESTIMATE: reads just under a hockey puck (76mm) in the photo; retail box
-// interior (110mm) easily contains it. Replace with a caliper reading to nail
-// the snug fit. The S3 base is MAGNETIC (collar snaps to its top), so a couple
-// mm of slop here is harmless.
-base_dia      = 67;
-// Puck thickness / height (mm). ESTIMATE for a thin magnetic charging disc.
-base_thick    = 13;
+/* [Fi base puck — measured with calipers] */
+// Outer diameter of the round Fi Series 3 base puck (mm). Measured: 44 mm.
+base_dia      = 44;
+// Puck thickness / height (mm). Measured: 11 mm.
+base_thick    = 11;
 
 /* [Fit] */
-// Radial clearance around the puck (mm). Slightly generous (1.0) because the
-// diameter is estimated and the base is magnetically retained — tighten to
-// 0.4-0.6 once you have a real measurement for a true snug fit.
-base_clear    = 1.0;
+// Radial clearance around the puck (mm). Tightened to 0.5 now that we have
+// a real measurement; adjust ±0.2 for printer tolerance.
+base_clear    = 0.5;
 
 /* [Cradle] */
 // Base FACE angle from VERTICAL: 0 = faces straight out from wall, 90 = faces
@@ -62,15 +57,12 @@ lip_in        = 1.3;     // mm  inward overhang over the puck rim
 lip_h         = 1.4;     // mm  lip thickness (down from the cup rim)
 lip_gap_w     = 18;      // mm  gap in the lip at the bottom (puck/cable slot)
 
-/* [Cable — slot down the cup wall into an internal cavity, out an inner mouth] */
+/* [Cable — slot down cup wall into cavity, exits through plate BACK face] */
 notch_w       = 14;      // mm  slot width in the cup's lower wall (plug rides down)
 cav_w         = 30;      // mm  internal cable cavity width  (x)
 cav_len       = 36;      // mm  internal cable cavity length (y)
 cav_h         = 10;      // mm  cavity height above the plate front
-mouth_w       = 14;      // mm  cable exit mouth width  (on the inner side)
-mouth_h       = 7;       // mm  cable exit mouth height
-channel_w     = 7;       // mm  shallow tail groove to the outlet opening
-channel_d     = 2.0;     // mm  groove depth (leaves a 2 mm web in the 4 mm plate)
+mouth_w       = 14;      // mm  back-plate exit slot width (x); cable exits rearward
 
 /* [Decora plate] */
 plate_th      = 4.0;     // mm  faceplate slab thickness
@@ -199,31 +191,14 @@ module cavity_cut() {
                edges = "ALL", except = BOTTOM);
 }
 
-// Exit mouth: a small slot from the cavity out the cradle's INNER side, where
-// the cable tail heads for the USB brick in the outlet.
-module mouth_cut() {
-    // floor sits 0.5 mm BELOW the plate face so the mouth meets the tail
-    // groove with no ledge
-    translate([(pad_d/2 + 12)/2 - 1, pad_y, plate_th - 0.5 + mouth_h/2])
-        cuboid([pad_d/2 + 14, mouth_w, mouth_h], rounding = 2.5,
-               edges = "ALL", except = [LEFT, RIGHT]);
-}
-
-// A rounded groove cut into the front face along a polyline of [x,y] points.
-module groove(pts) {
-    for (i = [0:len(pts)-2])
-        hull() for (p = [pts[i], pts[i+1]])
-            translate([p[0], p[1], plate_th - channel_d])
-                cylinder(h = channel_d + eps, d = channel_w);
-}
-
-// Shallow tail groove from the mouth to the outlet opening (local frame; +X is
-// the inner side, so this runs toward the opening edge).
-module tail_groove() {
-    // starts UNDER the mouth (2 mm inside the pad edge) so the channel visibly
-    // emanates from the exit instead of floating on the plate
-    groove([[pad_d/2 - 2, pad_y],
-            [off_x - (opening_w/2 + 2), -14]]);
+// Cable exits through the BACK face of the plate (z = 0) into the wall box.
+// Replaces the old inner-side mouth + front-face groove: no sharp bend, no
+// groove visible on the plate front. Slot is centered at cav_y so it connects
+// directly to the cavity floor.
+module back_plate_exit() {
+    translate([0, cav_y, -eps])
+        linear_extrude(plate_th + 2*eps)
+            rect([mouth_w, 18], rounding = 2);
 }
 
 // Thin retaining lip on the lower half of the recess rim, gap at the bottom
@@ -266,8 +241,7 @@ module fi_charger_plate() {
                 recess_cut();
                 chute_cut();
                 cavity_cut();
-                mouth_cut();
-                tail_groove();
+                back_plate_exit();
             }
             back_clip();
         }
