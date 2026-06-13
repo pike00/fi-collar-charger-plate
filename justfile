@@ -35,6 +35,12 @@ preview:
 dims:
     OPENSCADPATH={{oscadpath}} {{openscad}} -o /tmp/fi-dims.csg {{src}} 2>&1 | grep ECHO; rm -f /tmp/fi-dims.csg
 
+blender := env_var_or_default("BLENDER", "/home/will/opt/blender-4.4.3-linux-x64/blender")
+
+# Blender Cycles render: blender-hero.png + blender-front.png
+render-blender:
+    {{blender}} --background --python src/blender-render.py
+
 # Remove generated meshes (PNGs are committed).
 clean:
     rm -f export/*.stl
