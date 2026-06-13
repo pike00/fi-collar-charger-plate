@@ -15,7 +15,7 @@
 // retention. Only fit-critical inputs are the puck's own dimensions.
 //
 // Build:   just build        (STL)     |  Preview: just preview  (PNG)
-// Override any param headless:  openscad -D 'base_dia=44' -o out.stl <src>
+// Override any param headless:  openscad -D 'base_dia=58.2' -o out.stl <src>
 // Inspect: -D section=1 (YZ slice through a cup), -D section=2 (XZ slice
 //          through the cable cavity).
 // =============================================================================
@@ -23,8 +23,8 @@
 include <BOSL2/std.scad>
 
 /* [Fi base puck — measured with calipers] */
-// Outer diameter of the round Fi Series 3 base puck (mm). Measured: 44 mm.
-base_dia      = 44;
+// Outer diameter of the round Fi Series 3 base puck (mm). Measured: 58.2 mm.
+base_dia      = 58.2;
 // Puck thickness / height (mm). Measured: 11 mm.
 base_thick    = 11;
 
