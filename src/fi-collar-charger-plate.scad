@@ -43,8 +43,11 @@ cradle_tilt   = 30;      // deg
 // stays exposed for the collar.
 cup_depth     = 9;       // mm
 cradle_wall   = 3.2;     // mm  cup side wall
-floor_th      = 2.8;     // mm  cup floor thickness
 cup_round     = 2.5;     // mm  rounding on the cup body edges (soft rim)
+
+/* [Cup ledge — ring that the puck rim rests on; cup interior is open above and below] */
+ledge_h       = 2.5;     // mm  ledge ring height
+ledge_w       = 4.0;     // mm  ledge ring radial width (inward from cup inner wall)
 
 /* [Base pad — the cradle's foot; the hull from cup to pad IS the seamless blend] */
 pad_d         = 42;      // mm  pad diameter on the plate
@@ -82,12 +85,12 @@ $fn           = 48;      // bump to 96+ for the final export
 // ---- derived ----------------------------------------------------------------
 cup_id        = base_dia + 2*base_clear;          // cup inner bore
 cup_od        = cup_id + 2*cradle_wall;           // cup outer
-cup_h         = cup_depth + floor_th;             // cup total height
-// Lift the cup out along its own axis until the recess floor's rear edge sits
+cup_h         = cup_depth + ledge_h;              // cup total height
+// Lift the cup out along its own axis until the ledge's rear edge sits
 // in FRONT of the wall plane (+1 mm along the axis, ~0.87 mm normal to the
 // wall). Without this, a tilted wide puck physically intersects the wall — the
 // flaw in every version before v1.6.
-cup_lift      = max(0, (cup_id/2)*tan(cradle_tilt) - floor_th + 1);
+cup_lift      = max(0, (cup_id/2)*tan(cradle_tilt) - ledge_h + 1);
 assert(cup_depth < base_thick,
        "cup_depth must stay below base_thick so the charging face is exposed");
 off_x         = opening_w/2 + gap + cup_od/2;     // cradle center, off the midline
@@ -163,11 +166,16 @@ module cradle_solid() {
     }
 }
 
-// Puck recess, cut along the tilted axis. The puck rests on the floor.
+// Puck recess: full bore from the ledge upward; the center of the ledge is also
+// cut so only a `ledge_w`-wide ring remains at the cup bottom. The puck rim
+// sits on this ring; the cup interior is open top and bottom.
 module recess_cut() {
-    in_cup_frame()
-        translate([0, 0, floor_th])
-            cylinder(h = cup_h + 8, d = cup_id);
+    in_cup_frame() {
+        translate([0, 0, ledge_h])
+            cylinder(h = cup_depth + 8, d = cup_id);
+        translate([0, 0, -eps])
+            cylinder(h = ledge_h + 2*eps, d = cup_id - 2*ledge_w);
+    }
 }
 
 // One straight slot does double duty: the notch in the cup's lower wall (the
@@ -177,7 +185,7 @@ module chute_cut() {
     y0 = -(cup_od/2 + 0.5);          // just past the outer wall face
     y1 = -(cup_id/2) + 8;            // 8 mm into the recess
     z0 = -cup_lift - 10;             // reaches down through the lift into the cavity
-    z1 = floor_th + cup_depth + 2;   // fully open at the rim
+    z1 = ledge_h + cup_depth + 2;    // fully open at the rim
     in_cup_frame()
         translate([0, (y0+y1)/2, (z0+z1)/2])
             cube([notch_w, y1 - y0, z1 - z0], center = true);
