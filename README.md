@@ -1,3 +1,16 @@
+---
+title: "Fi collar charger plate"
+description: "A 3D-printed Decora outlet faceplate that holds two Fi Series 3 dog-collar charging bases in flanking cradles, charges the collars in place, keeps the outlet usable, and swallows t…"
+date: 2026-06-10
+version: v2.2
+tags: [pet, mounting, electronics]
+material: PETG / PLA
+print: { layer_height: 0.2mm, infill: 25%, supports: false }
+license: CC-BY-NC-4.0
+showcase: false
+source: private
+---
+
 # Fi collar charger plate
 
 A 3D-printed **Decora outlet faceplate** that holds **two Fi Series 3 dog-collar
